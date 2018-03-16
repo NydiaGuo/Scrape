@@ -36,7 +36,7 @@ app.set("view engine", "handlebars");
 // By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/Scrape", {
+mongoose.connect("mongodb://localhost/crapenews", {
   // useMongoClient: true
 });
 
@@ -44,7 +44,6 @@ mongoose.connect("mongodb://localhost/Scrape", {
 //Routes
 
 app.get("/", function(req, res) {
-	console.log("this is root1");
 	//Grab the info in the Articles collection
 	db.Article.find({})
 	.then(function(data) {
@@ -98,8 +97,8 @@ app.get("/articles", function(req, res) {
 		//If could find Articles, then send it back to the client
 		console.log("this is dbArticle", dbArticle);
 		console.log("========================the end of dbArticle=======================");
-		res.render("index", dbArticle);
-		// res.json(dbArticle);
+		// res.render("index", { news: dbArticle });
+		res.json(dbArticle);
 	})
 	.catch(function(err) {
 		res.json(err);
@@ -112,10 +111,11 @@ app.get("/articles", function(req, res) {
 app.get("/articles/:id", function(req, res) {
 	//Using the id passed in the id parameter, prepare a query that finds the matching one in the db
 	db.Article.findOne({_id: req.params.id})
-	.populate("Comment")
-	.then(function(dbArticle) {
+	.populate("comment")
+	.then(function(dbcomment) {
 		//If would find an Article with the given id, send it to the client
-		res.json(dbArticle);
+		// res.json(dbArticle);
+		res.render("index", { comment: dbcomment });
 	})
 	.catch(function(err) {
 		res.json(err);
