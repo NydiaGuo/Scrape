@@ -1,0 +1,51 @@
+<div class="container">
+		<div class="row">
+		<div class="col-md-12">
+
+		<nav class="navbar navbar-inverse bg-dark">
+		    <div class="container-fluid">
+			    <div class="navbar-header">
+			    	<a class="navbar-brand" href="/">Mongo Scraper</a>
+			    </div>
+			    <ul class="nav navbar-nav">
+				    <li class="active"><a href="/">Home</a></li>
+				    <li><a class="btn btn-danger scrape-new">SCRAPE NEW ARTICLES!</a></li>
+			    </ul>
+		    </div>
+		</nav>
+
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="jumbotron text-center">
+				  <div class="overlay">
+				  </div>
+				  <div class="background-image">
+				  </div>
+				  <div class="caption">
+				    <h1>Mongo Scraper</h1>
+				    <p>New York Times Edition</p>
+				  </div>
+			</div>
+		</div>
+	</div>
+
+{{#each news}}
+<div class="jumbotron jumbotron-fluid" id="article">
+  <div class="container">
+    <h4 class="display-5">{{this.title}}</h4>
+    <a class="lead" href={{this.link}}>{{this.link}}</a>
+  </div>
+</div>
+{{/each}}
+
+
+</div>
+<footer>
+	<div class="container">
+		<p>CNN News Mongo Scraper</p>
+	</div>
+</footer>
+
