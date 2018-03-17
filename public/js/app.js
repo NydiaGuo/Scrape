@@ -1,11 +1,9 @@
 
+console.log("hide modal");
 $.getJSON("/articles", function(data) {
 	console.log("first:" + data);
-	// for (var i = 0; i < data.length; i++) {
-		// $("#article").append("<p data-id='" + data[i]._id + "'>" +  "</p>");
-	// }
-});
 
+});
 
 $(document).on("click", ".scrape-new", function() {
 	console.log("page reloaded!");
@@ -16,39 +14,6 @@ $(document).on("click", ".scrape-new", function() {
 	.then(function(data) {
 		console.log("this is NEW data", data);
 		window.location.reload();
-	});
-});
-
-
-$(document).on("click", "#article", function(data) {
-
-	$("#comment").empty();
-
-	var thisId = $(this).attr("data-id");
-
-	$.ajax({
-		method: "GET",
-		url: "/articles/" + thisId
-	})
-	.then(function(data) {
-	console.log(data);
-      // The title of the article
-      $("#modal-title").val();
-      // // An input to enter a new title
-      // $("#comment").append("<input id='titleinput' name='title' >" + "<br>");
-      // // A textarea to add a new comment body
-      // $("#comment").append("<textarea id='bodyinput' name='body'></textarea>" + "<br>");
-      // // A button to submit a new comment, with the id of the article saved to it
-      // $("#comment").append("<button data-id='" + data._id + "' id='savecomment'>Save comment</button>");
-
-      // // If there's a comment in the article
-      // if (data.comment) {
-      //   // Place the title of the comment in the title input
-      //   $("#titleinput").val(data.comment.title);
-      //   // Place the body of the comment in the body textarea
-      //   $("#bodyinput").val(data.comment.body);
-      // }
-
 	});
 });
 
@@ -80,3 +45,36 @@ $(document).on("click", "#savecomment", function() {
   $("#bodyinput").val("");
 });
 
+
+$(".submitCommentBtn").on("click", function(event) {
+
+  event.preventDefault();
+
+  $(".addCommentInput").each(function(input) {
+    input.value = "";
+  });
+
+  var commentData = $(".addCommentForm").serializeArray();
+  console.log("this commentData", commentData);
+
+  var newComment = {
+    title: commentData[1].value,
+    body: commentData[2].value
+  };
+
+  $.ajax({
+    method: "POST",
+    url: "/comment/" + commentData[0].value,
+    data: newComment
+  })
+  .then(function(data) {
+    console.log("commentDataBtn", data);
+  });
+
+});
+
+//once click on comment button which have the value of the data id
+$(".comment-btn").on("click", function(event) {
+  console.log(this);
+  $("#targetArticle").val(this.dataset.id);
+}); 

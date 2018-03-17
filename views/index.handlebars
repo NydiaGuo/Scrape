@@ -33,39 +33,47 @@
 	</div>
 
 {{#each news}}
-<div class="jumbotron jumbotron-fluid" id="article">
-  <div class="container" data-id={{this._id}}>
-    <a class="display-5" href={{this.link}}>{{this.title}}</a>
+<div class="card article">
+  <h5 class="card-header">News</h5>
+  <div class="card-body">
+    <a class="card-title" href={{this.link}}>{{this.title}}</a>
+    <p class="card-text">summary{{this.sum}}</p>
+    <button type="button" data-id={{this._id}} data-toggle="modal" data-target="#addCommentModal" class="btn btn-primary comment-btn">Comment</button>
   </div>
 </div>
 {{/each}}
 
-{{#each comment}}
-<div class="modal" tabindex="-1" role="dialog" id="comment">
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="addCommentModal">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{{this.title}}</h5>
+        <h5 class="modal-title">Comment</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <p>{{this.body}}</p>
+      <div class="form-group modal-body">
+      	<form class="addCommentForm">
+      		<input class="form-control addCommentInput" type="hidden" name="articleID" id="targetArticle" value="">
+      		<input class="form-control addCommentInput" type="text" name="title">
+      		<br>
+      		<textarea class="form-control addCommentInput" name="body"> 
+      		</textarea>	
+      	</form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn close btn-primary submitCommentBtn" data-dismiss="modal">Save changes</button>
       </div>
     </div>
   </div>
 </div>
-{{/each}}
 
-
-</div>
 <footer>
 	<div class="container">
 		<p>CNN News Mongo Scraper</p>
 	</div>
 </footer>
+
 

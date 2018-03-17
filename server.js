@@ -46,14 +46,15 @@ mongoose.connect("mongodb://localhost/crapenews", {
 app.get("/", function(req, res) {
 	//Grab the info in the Articles collection
 	db.Article.find({})
+	.sort({ _id:-1 }).limit(5)
 	.then(function(data) {
 		res.render("index", { news: data });
+		console.log("this is home page", data);
 	})
 	.catch(function(err){
 		console.log(err);
 	});
 
-	
 });
 
 
@@ -65,19 +66,21 @@ app.get("/scrape", function(req, res) {
 		//load the whole thing into cheerio and save it to $ 
 		var $ = cheerio.load(response.data);
 
-		$("article h2").each(function(i, element) {
+
+		$(".theme-summary").each(function(i, element) {
 			//Save an empty result object to hold the title and link
 			var result = {};
+			
+			result.title = $(this).children("a").text().trim();
+			result.link = $(this).children(".story-heading").children("a").attr("href");
+			result.sum = $(this).children(".summary").text().trim();
 
-			result.title = $(this).children("a").text();
-			result.link = $(this).children("a").attr("href");
 
 			//Create a new Article using the 'result' object built from scraping
 			db.Article.create(result)
 			.then(function(dbArticle) {
 				//Show the added result in console
-				console.log("new articles added", dbArticle);
-				console.log("--------------------------------------------------------");
+				console.log("-----------------------new articles added---------------------------------");
 			})
 			.catch(function(err) {
 				return res.json(err);
@@ -97,8 +100,7 @@ app.get("/articles", function(req, res) {
 		//If could find Articles, then send it back to the client
 		console.log("this is dbArticle", dbArticle);
 		console.log("========================the end of dbArticle=======================");
-		// res.render("index", { news: dbArticle });
-		res.json(dbArticle);
+		res.render("index", { news: dbArticle });
 	})
 	.catch(function(err) {
 		res.json(err);
@@ -111,11 +113,10 @@ app.get("/articles", function(req, res) {
 app.get("/articles/:id", function(req, res) {
 	//Using the id passed in the id parameter, prepare a query that finds the matching one in the db
 	db.Article.findOne({_id: req.params.id})
-	.populate("comment")
-	.then(function(dbcomment) {
+	.populate("note")
+	.then(function(dbArticle) {
 		//If would find an Article with the given id, send it to the client
-		// res.json(dbArticle);
-		res.render("index", { comment: dbcomment });
+		res.json(dbArticle);
 	})
 	.catch(function(err) {
 		res.json(err);
@@ -123,14 +124,14 @@ app.get("/articles/:id", function(req, res) {
 });
 
 
-app.post("/articles/:id", function(req, res) {
+app.post("/comment/:articleID", function(req, res) {
   // Create a new note and pass the req.body to the entry
   db.Comment.create(req.body)
     .then(function(dbComment) {
       // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
       // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
       // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbComment._id }, { new: true });
+      return db.Article.findOneAndUpdate({ _id: req.params.articleID }, { note: dbComment._id }, { new: true });
     })
     .then(function(dbArticle) {
       // If we were able to successfully update an Article, send it back to the client
