@@ -1,7 +1,7 @@
 // Dependencies
 var express = require("express");
-var mongojs = require("mongojs");
-var request = require("request");
+// var mongojs = require("mongojs");
+// var request = require("request");
 var exphbs = require("express-handlebars");
 
 

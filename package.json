@@ -8,8 +8,8 @@
     "start": "node server.js"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/NydiaGuo/Scrape.git"
+    "type": "mongodb",
+    "url": "//heroku_c2x8n8p6:euscq0sq9j7e1a28k4rpnf0gt5@ds215709.mlab.com:15709/heroku_c2x8n8p6"
   },
   "author": "",
   "license": "ISC",
