@@ -2,20 +2,16 @@
 var express = require("express");
 // var mongojs = require("mongojs");
 // var request = require("request");
-var exphbs = require("express-handlebars");
-
-
 var mongoose = require("mongoose");
+var exphbs = require("express-handlebars");
 var logger = require("morgan");
 var bodyParser = require("body-parser");
 
-var axios = require("axios");
-var cheerio = require("cheerio");
 
 //Require all models
 var db = require("./models");
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Initialize Express
 var app = express();
@@ -23,26 +19,34 @@ var app = express();
 // Configure middleware
 // Use morgan logger for logging requests
 app.use(logger("dev"));
+
 // Use body-parser for handling form submissions
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(bodyParser.json());
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
+
 
 // Set Handlebars as the default templating engine.
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+// If deployed, use the deployed database. Otherwise use the local crapenews database
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/crapenews";
 
 // By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/crapenews", {
-  // useMongoClient: true
+mongoose.connect( MONGODB_URI, {
+//   useMongoClient: true
 });
+
+var axios = require("axios");
+var cheerio = require("cheerio");
 
 
 //Routes
-
 app.get("/", function(req, res) {
 	//Grab the info in the Articles collection
 	db.Article.find({})
@@ -57,18 +61,17 @@ app.get("/", function(req, res) {
 
 });
 
-
 //Scrap the NYT website
 app.get("/scrape", function(req, res) {
 	console.log("scraped!");
+
 	//Get the body of the html with request
 	axios.get("https://www.nytimes.com/").then(function(response) {
 		//load the whole thing into cheerio and save it to $ 
 		var $ = cheerio.load(response.data);
 
-
 		$(".theme-summary").each(function(i, element) {
-			//Save an empty result object to hold the title and link
+			//Save an empty result object to hold the title, link and summary
 			var result = {};
 			
 			result.title = $(this).children("a").text().trim();
@@ -142,6 +145,7 @@ app.post("/comment/:articleID", function(req, res) {
       res.json(err);
     });
 });
+
 
 //listen on port 3000
 app.listen(PORT, function() {

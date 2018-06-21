@@ -5,6 +5,7 @@ $.getJSON("/articles", function(data) {
 
 });
 
+//scrape new article button trigger function to get new articles
 $(document).on("click", ".scrape-new", function() {
 	console.log("page reloaded!");
 	$.ajax({
@@ -17,6 +18,8 @@ $(document).on("click", ".scrape-new", function() {
 	});
 });
 
+
+//save the comments for each article
 $(document).on("click", "#savecomment", function() {
   // Grab the id associated with the article from the submit button
   var thisId = $(this).attr("data-id");
